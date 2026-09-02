@@ -16,6 +16,15 @@ jobs:
         with:
           flutter-version: '3.22.0'
 
+      - name: Create Flutter project
+        run: |
+          flutter create -t app temp_app
+          cp -r temp_app/android .
+          cp -r temp_app/ios .
+          cp -r temp_app/web .
+          cp temp_app/.gitignore .
+          rm -rf temp_app
+
       - name: Get dependencies
         run: flutter pub get
 
