@@ -91,7 +91,6 @@ class _PregnancyWheelScreenState extends State<PregnancyWheelScreen> {
       ),
       body: Column(
         children: [
-          // Instructions
           Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
             color: const Color(0xFFF5E6C8),
@@ -106,7 +105,6 @@ class _PregnancyWheelScreenState extends State<PregnancyWheelScreen> {
             ),
           ),
 
-          // Wheel Area
           Expanded(
             child: Center(
               child: SizedBox(
@@ -173,20 +171,9 @@ class _PregnancyWheelScreenState extends State<PregnancyWheelScreen> {
                     // Fixed Pointer at Top
                     Positioned(
                       top: 0,
-                      child: Container(
-                        width: 30,
-                        height: 30,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFD32F2F),
-                          shape: BoxShape.triangle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
+                      child: CustomPaint(
+                        size: const Size(30, 30),
+                        painter: TrianglePainter(),
                       ),
                     ),
                   ],
@@ -195,7 +182,6 @@ class _PregnancyWheelScreenState extends State<PregnancyWheelScreen> {
             ),
           ),
 
-          // Current LMP Selection
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
             margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -223,7 +209,6 @@ class _PregnancyWheelScreenState extends State<PregnancyWheelScreen> {
 
           const SizedBox(height: 15),
 
-          // EDD Result
           Container(
             width: double.infinity,
             margin: const EdgeInsets.all(20),
@@ -298,14 +283,12 @@ class OuterWheelPainter extends CustomPainter {
     final outerRadius = size.width / 2 - 5;
     final innerRadius = outerRadius - 80;
 
-    // Background circle
     canvas.drawCircle(center, outerRadius, Paint()..color = const Color(0xFFF4D03F));
     canvas.drawCircle(center, innerRadius, Paint()..color = const Color(0xFFFDF5E6));
 
     for (int i = 0; i < 12; i++) {
       double angle = monthAngle + (2 * pi * i / 12) - pi / 2;
       
-      // Separator lines
       final linePaint = Paint()
         ..color = const Color(0xFFD4A857)
         ..strokeWidth = 1.5;
@@ -320,7 +303,6 @@ class OuterWheelPainter extends CustomPainter {
       );
       canvas.drawLine(start, end, linePaint);
 
-      // Highlight selected month
       if (i == selectedMonth - 1) {
         final highlightPaint = Paint()
           ..color = const Color(0xFFFF8C00).withOpacity(0.7)
@@ -336,7 +318,6 @@ class OuterWheelPainter extends CustomPainter {
         );
       }
 
-      // Month labels
       final midAngle = monthAngle + (2 * pi * (i + 0.5) / 12) - pi / 2;
       final textPainter = TextPainter(
         text: TextSpan(
@@ -383,13 +364,11 @@ class InnerWheelPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final innerRadius = size.width / 2 - 90;
 
-    // Inner wheel background
     canvas.drawCircle(center, innerRadius, Paint()..color = const Color(0xFFFFB74D));
 
     for (int i = 0; i < 31; i++) {
       double angle = dayAngle + (2 * pi * i / 31) - pi / 2;
       
-      // Highlight selected day
       if (i == selectedDay - 1) {
         final highlightPaint = Paint()..color = const Color(0xFFE65100);
         canvas.drawCircle(
@@ -402,7 +381,6 @@ class InnerWheelPainter extends CustomPainter {
         );
       }
 
-      // Day numbers
       final textPainter = TextPainter(
         text: TextSpan(
           text: '${i + 1}',
@@ -427,7 +405,6 @@ class InnerWheelPainter extends CustomPainter {
       );
     }
 
-    // Center circle
     canvas.drawCircle(center, 30, Paint()..color = const Color(0xFF6D4C2F));
     
     final centerText = TextPainter(
@@ -452,4 +429,31 @@ class InnerWheelPainter extends CustomPainter {
   bool shouldRepaint(covariant InnerWheelPainter oldDelegate) {
     return dayAngle != oldDelegate.dayAngle || selectedDay != oldDelegate.selectedDay;
   }
+}
+
+class TrianglePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..moveTo(size.width / 2, 0)
+      ..lineTo(0, size.height)
+      ..lineTo(size.width, size.height)
+      ..close();
+
+    final paint = Paint()
+      ..color = const Color(0xFFD32F2F)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawPath(path, paint);
+
+    final borderPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+
+    canvas.drawPath(path, borderPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant TrianglePainter oldDelegate) => false;
 }
